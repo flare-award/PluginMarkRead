@@ -1,0 +1,24 @@
+{
+    "compilerOptions": {
+        "target": "ES2022",
+        "module": "CommonJS",
+        "moduleResolution": "Node",
+        "lib": ["ES2022", "DOM"],
+        "strict": true,
+        "esModuleInterop": true,
+        "skipLibCheck": true,
+        "forceConsistentCasingInFileNames": true,
+        "outDir": ".build",
+        "rootDir": "..",
+        "types": ["node"]
+    },
+    "include": [
+        "../markRead/protocol.ts",
+        "../markRead/core/policy.ts",
+        "../markRead/core/receiptStore.ts",
+        "../markRead/core/sentLog.ts",
+        "../markRead/core/stores.ts",
+        "../markRead/core/connection.ts",
+        "./*.test.ts"
+    ]
+}

@@ -1,0 +1,18 @@
+{
+    "name": "markread",
+    "version": "1.0.0",
+    "private": true,
+    "description": "MarkRead: cooperative read receipts for Vencord, with a self-hosted relay",
+    "license": "GPL-3.0-or-later",
+    "type": "commonjs",
+    "scripts": {
+        "test": "npm run test:client && npm run test:server",
+        "test:client": "tsc -p tests/tsconfig.json && node --test \"tests/.build/tests/*.test.js\"",
+        "test:server": "npm --prefix server test",
+        "typecheck:tests": "tsc -p tests/tsconfig.json --noEmit"
+    },
+    "devDependencies": {
+        "@types/node": "^22.10.0",
+        "typescript": "^5.7.0"
+    }
+}

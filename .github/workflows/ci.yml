@@ -1,0 +1,83 @@
+name: CI
+
+on:
+  push:
+    branches: [main, "arena/**"]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  client-tests:
+    name: Client logic tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+      - run: npm run test:client
+
+  server-tests:
+    name: Relay tests
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: server
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: server/package-lock.json
+
+      - run: npm ci
+      - run: npm test
+
+  vencord-build:
+    name: Vencord build and typecheck
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Enable pnpm
+        run: corepack enable
+
+      - name: Check out Vencord
+        uses: actions/checkout@v4
+        with:
+          repository: Vendicated/Vencord
+          path: vencord
+          fetch-depth: 1
+
+      - name: Install Vencord dependencies
+        working-directory: vencord
+        run: pnpm install --frozen-lockfile
+
+      - name: Copy MarkRead into userplugins
+        run: |
+          mkdir -p vencord/src/userplugins
+          cp -r markRead vencord/src/userplugins/markRead
+
+      - name: Typecheck
+        working-directory: vencord
+        run: pnpm testTsc
+
+      - name: Lint the plugin
+        working-directory: vencord
+        run: npx eslint src/userplugins/markRead
+
+      - name: Build Vencord
+        working-directory: vencord
+        run: pnpm build
