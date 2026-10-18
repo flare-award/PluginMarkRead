@@ -1,0 +1,153 @@
+/*
+ * MarkRead — cooperative read receipts for Discord DMs
+ * Copyright (c) 2026 MarkRead contributors
+ * SPDX-License-Identifier: GPL-3.0-or-later
+ */
+
+.vc-markread-slot {
+    display: inline-flex;
+    align-items: center;
+    vertical-align: middle;
+    line-height: 0;
+}
+
+.vc-markread-header-slot {
+    display: inline-flex;
+    align-items: center;
+    margin-left: 4px;
+    vertical-align: baseline;
+}
+
+.vc-markread-grouped-slot {
+    display: inline-flex;
+    align-items: center;
+    margin-top: 2px;
+    line-height: 0;
+}
+
+/* Cozy mode: grouped messages have no header and therefore no timestamp. The
+   indicator then lives in the message accessory. Whenever a header is present,
+   the copy next to the timestamp wins. Compact mode always has a header. */
+[role="article"]:has(.vc-markread-header-slot) .vc-markread-grouped-slot {
+    display: none;
+}
+
+.vc-markread-indicator {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 0;
+    cursor: default;
+    color: var(--text-muted);
+    opacity: 0.85;
+    transition: color 120ms ease, opacity 120ms ease;
+}
+
+.vc-markread-indicator:hover {
+    opacity: 1;
+}
+
+.vc-markread-icon {
+    display: block;
+    flex: none;
+    overflow: visible;
+    stroke: currentColor;
+    stroke-width: 2.1;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    fill: none;
+}
+
+.vc-markread-sent {
+    color: var(--text-muted);
+}
+
+.vc-markread-stale {
+    color: var(--text-muted);
+    opacity: 0.6;
+}
+
+.vc-markread-read {
+    opacity: 1;
+}
+
+.vc-markread-color-brand {
+    color: var(--brand-500, #5865f2);
+}
+
+.vc-markread-color-green {
+    color: var(--green-360, #23a55a);
+}
+
+.vc-markread-color-blue {
+    color: var(--blue-345, #00a8fc);
+}
+
+/* The invisible element used to find the message row and observe it. */
+.vc-markread-anchor {
+    display: block;
+    width: 0;
+    height: 0;
+    overflow: hidden;
+    pointer-events: none;
+}
+
+.vc-markread-tooltip {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    max-width: 280px;
+    font-size: 13px;
+    line-height: 1.35;
+}
+
+.vc-markread-tooltip strong {
+    font-weight: 600;
+}
+
+.vc-markread-tooltip-note {
+    color: var(--text-muted);
+    font-size: 12px;
+}
+
+/* -------------------------------------------------------------------------- */
+/* Settings panel                                                             */
+/* -------------------------------------------------------------------------- */
+
+.vc-markread-settings h5 {
+    margin-bottom: 6px;
+}
+
+.vc-markread-settings p {
+    margin-bottom: 8px;
+}
+
+.vc-markread-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 8px 0 12px;
+}
+
+.vc-markread-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin: 8px 0 12px;
+}
+
+.vc-markread-list-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 6px 8px;
+    border: 1px solid var(--background-modifier-accent);
+    border-radius: 6px;
+}
+
+.vc-markread-list-row code {
+    font-size: 11px;
+    word-break: break-all;
+    color: var(--text-muted);
+}
