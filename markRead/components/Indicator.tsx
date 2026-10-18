@@ -6,7 +6,7 @@
 
 import ErrorBoundary from "@components/ErrorBoundary";
 import type { Channel, Message } from "@vencord/discord-types";
-import { React, Tooltip, UserStore } from "@webpack/common";
+import { ChannelStore, React, Tooltip, UserStore } from "@webpack/common";
 import type { CSSProperties, ReactNode } from "react";
 
 import { getDmPeer, isSupportedDmChannel } from "../core/discord";
@@ -222,15 +222,27 @@ function tooltipFor(state: IndicatorState, settings: ReturnType<typeof useSettin
 /* Public components                                                          */
 /* -------------------------------------------------------------------------- */
 
+/**
+ * Resolves the channel from the message when a caller does not pass it. The
+ * message header component only receives `message`; the accessory and the
+ * decoration API receive both.
+ */
+function resolveChannel(message: Message, channel: Channel | undefined): Channel | undefined {
+    if (channel) return channel;
+    if (!message?.channel_id) return undefined;
+    return ChannelStore.getChannel(message.channel_id);
+}
+
 function MarkReadIndicator({ message, channel, className }: {
     message: Message;
     channel: Channel | undefined;
     className?: string;
 }) {
     const settings = useSettings();
-    const state = useIndicatorState(message, channel);
+    const resolvedChannel = resolveChannel(message, channel);
+    const state = useIndicatorState(message, resolvedChannel);
 
-    if (!channel || !isSupportedDmChannel(channel)) return null;
+    if (!resolvedChannel || !isSupportedDmChannel(resolvedChannel)) return null;
     if (!state.eligible) return null;
 
     if (state.display.kind === "none") {
@@ -243,7 +255,7 @@ function MarkReadIndicator({ message, channel, className }: {
                 <IndicatorView
                     variant="sent"
                     settings={settings}
-                    tooltip={tooltipFor(state, settings, channel)}
+                    tooltip={tooltipFor(state, settings, resolvedChannel)}
                 />
             </span>
         );
@@ -254,7 +266,7 @@ function MarkReadIndicator({ message, channel, className }: {
             <IndicatorView
                 variant={state.display.stale ? "stale" : "read"}
                 settings={settings}
-                tooltip={tooltipFor(state, settings, channel)}
+                tooltip={tooltipFor(state, settings, resolvedChannel)}
             />
         </span>
     );
@@ -266,12 +278,31 @@ function MarkReadIndicator({ message, channel, className }: {
  */
 export const HeaderIndicatorWrapper = ErrorBoundary.wrap(({ message, channel }: {
     message: Message;
-    channel: Channel;
+    channel?: Channel;
 }) => (
     <span className="vc-markread-header-slot">
         <MarkReadIndicator message={message} channel={channel} />
     </span>
 ), { noop: true });
+
+/**
+ * Decorations API entry point. Compact mode has a header for every message, but
+ * the timestamp patch only matches the cozy branch, so this path covers it.
+ * CSS hides this copy whenever the header wrapper is present.
+ */
+export const CompactMessageIndicator = ErrorBoundary.wrap(({ message, channel, compact }: {
+    message: Message;
+    channel?: Channel;
+    compact?: boolean;
+}) => {
+    if (!compact) return null;
+
+    return (
+        <span className="vc-markread-compact-slot">
+            <MarkReadIndicator message={message} channel={channel} />
+        </span>
+    );
+}, { noop: true });
 
 /**
  * Accessories API entry point used for grouped messages, which Discord renders

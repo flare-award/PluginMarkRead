@@ -10,7 +10,7 @@ import definePlugin from "@utils/types";
 import type { Channel } from "@vencord/discord-types";
 import { ChannelStore, Menu, showToast } from "@webpack/common";
 
-import { HeaderIndicatorWrapper } from "./components/Indicator";
+import { CompactMessageIndicator, HeaderIndicatorWrapper } from "./components/Indicator";
 import { MessageAccessory } from "./components/MessageAccessory";
 import { SettingsPanel } from "./components/SettingsPanel";
 import { MarkReadConnection } from "./core/connection";
@@ -164,7 +164,7 @@ export default definePlugin({
     settings,
     settingsAboutComponent: SettingsPanel,
     managedStyle,
-    dependencies: ["MessageAccessoriesAPI"],
+    dependencies: ["MessageAccessoriesAPI", "MessageDecorationsAPI"],
 
     patches: [
         {
@@ -181,6 +181,10 @@ export default definePlugin({
     contextMenus: {
         "channel-context": channelContextPatch,
         "gdm-context": channelContextPatch
+    },
+
+    renderMessageDecoration({ message, channel, compact }) {
+        return <CompactMessageIndicator message={message} channel={channel} compact={compact} />;
     },
 
     renderMessageAccessory({ message, channel }) {

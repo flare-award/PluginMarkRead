@@ -25,10 +25,14 @@
     line-height: 0;
 }
 
-/* Cozy mode: grouped messages have no header and therefore no timestamp. The
-   indicator then lives in the message accessory. Whenever a header is present,
-   the copy next to the timestamp wins. Compact mode always has a header. */
-[role="article"]:has(.vc-markread-header-slot) .vc-markread-grouped-slot {
+/* Cozy mode: the patch inserts the indicator right after the timestamp, so the
+   decoration and accessory copies must not duplicate it. Compact mode has a
+   header for every message, but the patch only matches the cozy branch, so the
+   decoration is the visible copy there. Grouped cozy messages have no header at
+   all, which is what the accessory copy is for. */
+[role="article"]:has(.vc-markread-header-slot) .vc-markread-compact-slot,
+[role="article"]:has(.vc-markread-header-slot) .vc-markread-grouped-slot,
+[role="article"]:has(.vc-markread-compact-slot) .vc-markread-grouped-slot {
     display: none;
 }
 
